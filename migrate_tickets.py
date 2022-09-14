@@ -28,6 +28,4 @@ if __name__ == '__main__':
             repos = json.load(file)
             for repo in repos['targetRepos']:
                 migrate_tickets(args.source_repo, repo, args.throttle_seconds)
-    else:
-        raise Exception('either a target repo or config file must be supplied')
 
