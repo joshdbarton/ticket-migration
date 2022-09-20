@@ -7,7 +7,9 @@ import time
 def migrate_tickets(source_repo, target_repo, throttle_seconds):
     issues = json.loads(subprocess.check_output(f'gh issue list --repo {source_repo} --json "title,body" --limit 100'))
     for issue in issues:
-        subprocess.run('gh issue create --repo {} --title "{}" --body "{}"'.format(target_repo, issue['title'], issue['body']))
+        title = issue['title'].replace('"', '\\"')
+        body = issue['body'].replace('"', '\\"')
+        subprocess.run('gh issue create --repo {} --title "{}" --body "{}"'.format(target_repo, title, body))
         time.sleep(throttle_seconds)
     print(f'Tickets migrated for {target_repo}!')
 
