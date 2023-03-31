@@ -12,7 +12,7 @@ There are no other dependencies...so that's nice.
 
 There are two modes.
 
-1. Migrate to multiple target repos using a config file
+1. Migrate to multiple target repos using a config file.
 1. Migrate to a single target repo via command line arguments.
 
 ### Targeting Multiple Repos (this is probably what you want)
@@ -26,7 +26,7 @@ There are two modes.
     ./migrate_tickets.py source_org/source_repo
     ```
 
-### Targeting a Single Repos
+### Targeting a Single Repo
 
 1. Make sure the `migrate_tickets.py` file has execute permissions.
 1. Run this command specifying the source repo as a command line argument.
