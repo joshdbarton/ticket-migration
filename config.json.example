@@ -1,0 +1,6 @@
+{
+  "targetRepos": [
+      "org/repo1",
+      "org/repo2"
+  ]
+}
