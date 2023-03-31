@@ -2,6 +2,12 @@
 
 _Bow before it_
 
+## Dependencies
+
+This script depends on the [gh cli](https://cli.github.com/). If you don't have it, install it before you continue.
+
+There are no other dependencies...so that's nice.
+
 ## Usage
 
 There are two modes.
