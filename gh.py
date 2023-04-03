@@ -12,26 +12,34 @@ def get_open_issues(repo):
     return json.loads(subprocess.check_output(command))
 
 
-def create_issue(project, issue):
-    repo_id = project['repo_id']
+def create_issue(repo_id, issue):
     title = issue['title']
     body = issue['body']
     label_ids = []
-    project_id = project['project_id']
 
-    command = _graphql_command(
-        _gql_to_create_issue(repo_id, title, body, label_ids, project_id))
+    command = _graphql_command(_gql_to_create_issue(repo_id, title, body, label_ids))
     response = json.loads(subprocess.check_output(command))
 
-    return response
+    return {
+        'id': response['data']['createIssue']['issue']['id'],
+        'repo_id': repo_id,
+        'title': title,
+        'body': body
+    }
 
-    # command = ['gh', 'issue', 'create',
-    #            '--repo', repo,
-    #            '--project', project_name,
-    #            '--title', title,
-    #            '--body', body]
 
-    # subprocess.check_call(command)
+def add_issue_to_project(project, issue):
+    project_id = project['id']
+    issue_id = issue['id']
+
+    command = _graphql_command(_gql_to_add_issue_to_project(project_id, issue_id))
+    response = json.loads(subprocess.check_output(command))
+
+    return {
+        'project_item_id': response['data']['addProjectV2ItemById']['item']['id'],
+        'project_id': project_id,
+        'issue_id': issue_id
+    }
 
 
 def create_project(repo):
@@ -44,8 +52,8 @@ def create_project(repo):
     response = json.loads(subprocess.check_output(command))
 
     return {
-        'project_id': response['data']['createProjectV2']['projectV2']['id'],
-        'project_name': response['data']['createProjectV2']['projectV2']['title'],
+        'id': response['data']['createProjectV2']['projectV2']['id'],
+        'title': response['data']['createProjectV2']['projectV2']['title'],
         'repo_id': repo_id,
         'owner_id': owner_id
     }
@@ -92,21 +100,32 @@ mutation create_project_v2 {{
 }}'''
 
 
-def _gql_to_create_issue(repo_id, title, body, label_ids, project_id):
-    create_issue_input = json.dumps({
-        'repositoryId': repo_id,
-        'title': title,
-        'body': body,
-        'labelIds': label_ids,
-        'projectIds': [project_id]
-    })
-
+def _gql_to_create_issue(repo_id, title, body, label_ids):
     return f'''\
 mutation create_issue_in_project {{
-    createIssue (input: {create_issue_input}) {{
+    createIssue (input: {{
+        repositoryId: {json.dumps(repo_id)},
+        title: {json.dumps(title)},
+        body: {json.dumps(body)},
+        labelIds: {json.dumps(label_ids)}
+    }}) {{
         issue {{
             id
         }}
     }}
 }}'''
+
+
+def _gql_to_add_issue_to_project(project_id, issue_id):
+    return f'''\
+mutation add_project_v2_item_by_id {{
+    addProjectV2ItemById (
+        input: {{ projectId: "{project_id}", contentId: "{issue_id}" }}
+    ) {{
+        item {{
+            id
+        }}
+    }}
+}}'''
+
 

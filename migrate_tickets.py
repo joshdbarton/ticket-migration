@@ -21,11 +21,14 @@ def main(args):
 
 def migrate_tickets(source_repo, target_repo, throttle_seconds):
     target_project = gh.create_project(target_repo)
+    time.sleep(throttle_seconds)
+
     issues = gh.get_open_issues(source_repo)
+    time.sleep(throttle_seconds)
 
     for issue in issues:
-        gh.create_issue(target_project, issue)
-
+        new_issue = gh.create_issue(target_project['repo_id'], issue)
+        gh.add_issue_to_project(target_project, new_issue)
         time.sleep(throttle_seconds)
 
     print(f'Tickets migrated for {target_repo}!')
