@@ -1,4 +1,4 @@
-#!/bin/env python3
+#!/usr/bin/env python3
 
 import json
 import argparse
@@ -20,7 +20,8 @@ def main(args):
 
 
 def migrate_tickets(source_repo, target_repo, throttle_seconds):
-    issues = gh.get_issues(source_repo)
+    project = gh.create_project(target_repo)
+    issues = gh.get_open_issues(source_repo)
 
     for issue in issues:
         gh.create_issue(target_repo, issue)
