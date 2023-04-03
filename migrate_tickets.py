@@ -20,11 +20,11 @@ def main(args):
 
 
 def migrate_tickets(source_repo, target_repo, throttle_seconds):
-    project = gh.create_project(target_repo)
+    target_project = gh.create_project(target_repo)
     issues = gh.get_open_issues(source_repo)
 
     for issue in issues:
-        gh.create_issue(target_repo, issue)
+        gh.create_issue(target_project, issue)
 
         time.sleep(throttle_seconds)
 

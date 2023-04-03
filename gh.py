@@ -12,28 +12,42 @@ def get_open_issues(repo):
     return json.loads(subprocess.check_output(command))
 
 
-def create_issue(repo, issue):
+def create_issue(project, issue):
+    repo_id = project['repo_id']
     title = issue['title']
     body = issue['body']
+    label_ids = []
+    project_id = project['project_id']
 
-    command = ['gh', 'issue', 'create',
-               '--repo', repo,
-               '--title', title,
-               '--body', body]
+    command = _graphql_command(
+        _gql_to_create_issue(repo_id, title, body, label_ids, project_id))
+    response = json.loads(subprocess.check_output(command))
 
-    subprocess.check_call(command)
+    return response
+
+    # command = ['gh', 'issue', 'create',
+    #            '--repo', repo,
+    #            '--project', project_name,
+    #            '--title', title,
+    #            '--body', body]
+
+    # subprocess.check_call(command)
 
 
 def create_project(repo):
     owner_name, repo_name = repo.split('/')
     ids = _get_owner_and_repo_ids(owner_name, repo_name)
+    repo_id = ids['repo_id']
+    owner_id = ids['owner_id']
 
-    command = _graphql_command(_gql_to_create_project(ids['owner_id'], ids['repo_id'], repo_name))
+    command = _graphql_command(_gql_to_create_project(owner_id, repo_id, repo_name))
     response = json.loads(subprocess.check_output(command))
 
     return {
         'project_id': response['data']['createProjectV2']['projectV2']['id'],
-        'project_name': response['data']['createProjectV2']['projectV2']['title']
+        'project_name': response['data']['createProjectV2']['projectV2']['title'],
+        'repo_id': repo_id,
+        'owner_id': owner_id
     }
 
 
@@ -76,3 +90,23 @@ mutation create_project_v2 {{
         }}
     }}
 }}'''
+
+
+def _gql_to_create_issue(repo_id, title, body, label_ids, project_id):
+    create_issue_input = json.dumps({
+        'repositoryId': repo_id,
+        'title': title,
+        'body': body,
+        'labelIds': label_ids,
+        'projectIds': [project_id]
+    })
+
+    return f'''\
+mutation create_issue_in_project {{
+    createIssue (input: {create_issue_input}) {{
+        issue {{
+            id
+        }}
+    }}
+}}'''
+
