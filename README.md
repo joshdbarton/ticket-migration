@@ -18,12 +18,12 @@ There are two modes.
 ### Targeting Multiple Repos (this is probably what you want)
 
 1. Copy the `config.json.example` file to `config.json`.
-1. Add the repos you wish to target to the `targetRepos` array in the `config.json` file. The repos should be listed in the form `org_name/repo_name`.
+1. Add the repos you wish to target to the `targetRepos` array in the `config.json` file. The repos should be listed in the form `owner_name/repo_name`.
 1. Make sure the `migrate_tickets.py` file has execute permissions.
 1. Run this command specifying the source repo as a command line argument.
 
     ```shell
-    ./migrate_tickets.py source_org/source_repo
+    ./migrate_tickets.py source_owner/source_repo
     ```
 
 ### Targeting a Single Repo
@@ -32,6 +32,6 @@ There are two modes.
 1. Run this command specifying the source repo as a command line argument.
 
     ```shell
-    ./migrate_tickets.py source_org/source_repo --target_repo target_org/target_repo
+    ./migrate_tickets.py source_owner/source_repo --target_repo target_owner/target_repo
     ```
 
